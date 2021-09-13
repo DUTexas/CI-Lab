@@ -64,6 +64,12 @@ static token_t check_reserved_ids(char *s) {
  * Return value: pointer to a leaf node
  * (STUDENT TODO) */
 static node_t *build_leaf(void) {
+        if (this_token->ttype == TOK_NUM){
+            if (next_token->ttype == TOK_PLUS){
+                build_exp()
+            }
+        }
+
     return NULL;
 }
 
@@ -91,6 +97,20 @@ static node_t *build_exp(void) {
         return build_leaf();
     } else {
         // (STUDENT TODO) implement the logic for internal nodes
+        if (this_token ->ttype == TOK_LPAREN) {
+            // allocate memory for the root node
+            this_token -> node_type = NT_INTERNAL;
+            node_t *ret = calloc(1, sizeof(node_t));
+            this_token->children[0] = ret; 
+            advance_lexer()
+        }            
+        if (this_token -> ttype == TOK_PLUS){
+            this_token -> node_type = NT_INternal;
+            node_t *ret = calloc(1, sizeof(node_t));
+            this_token -> children[1] = next_token;
+            advance_lexer()
+            return build_exp(ret);
+        }
         return NULL;
     }
 }
