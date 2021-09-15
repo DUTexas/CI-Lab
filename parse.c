@@ -80,11 +80,13 @@ static node_t *build_leaf(void) {
         ret->type     = INT_TYPE;
         ret->val.ival = atoi(this_token->repr);
         break;
-        default:
+    default:
+        return ret;
         break;
     }
-    
-    advance_lexer();
+    if (next_token->ttype != TOK_EOL){
+        advance_lexer();
+    }
 
     return ret;
 }
@@ -131,7 +133,10 @@ static node_t *build_exp(void) {
             ret->tok = this_token->ttype;
             advance_lexer();
             ret->children[1] = build_exp();
-        }            
+        }
+        if(!(next_token->ttype == TOK_EOL || next_token->ttype == TOK_SEP || next_token->ttype == TOK_FMT_SPEC)){
+                advance_lexer();
+        }
         
 
         return ret;
