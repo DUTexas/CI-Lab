@@ -23,14 +23,15 @@ char *strrev(char *str);
  */
 
 static void infer_type(node_t *nptr) {
+    /*
     if (nptr != NULL){
-        /*check val
+        check val
         if ( nptr -> val == ival){
             nptr -> 
         }
-        */
 
     }
+    */
 
     return;
 }

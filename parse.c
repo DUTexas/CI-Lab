@@ -28,6 +28,8 @@ static const struct {
     {"true", TOK_TRUE},
     {"false", TOK_FALSE}
 };
+//DEBUG
+//node_t *ret = calloc(1, sizeof(node_t));
 
 /* is_binop() - return true if a token represents a binary operator
  * Parameter: Any token
@@ -64,13 +66,27 @@ static token_t check_reserved_ids(char *s) {
  * Return value: pointer to a leaf node
  * (STUDENT TODO) */
 static node_t *build_leaf(void) {
-        if (this_token->ttype == TOK_NUM){
-            if (next_token->ttype == TOK_PLUS){
-                build_exp()
-            }
-        }
 
-    return NULL;
+    node_t *ret = calloc(1, sizeof(node_t));
+    if (! ret) {
+        // calloc returns NULL if memory allocation fails
+        logging(LOG_FATAL, "failed to allocate node");
+        return NULL;
+    }
+    ret->tok = this_token->ttype;
+    ret->node_type = NT_LEAF;
+    switch (this_token->ttype){
+        case TOK_NUM:
+        ret->type     = INT_TYPE;
+        ret->val.ival = atoi(this_token->repr);
+        break;
+        default:
+        break;
+    }
+    
+    advance_lexer();
+
+    return ret;
 }
 
 /* build_exp() - parse an expression based on this_token and / or next_token
@@ -79,6 +95,7 @@ static node_t *build_leaf(void) {
  * Return value: pointer to an internal node
  * (STUDENT TODO) */
 static node_t *build_exp(void) {
+
     // check running status
     if (terminate || ignore_input) return NULL;
     
@@ -97,21 +114,27 @@ static node_t *build_exp(void) {
         return build_leaf();
     } else {
         // (STUDENT TODO) implement the logic for internal nodes
-        if (this_token ->ttype == TOK_LPAREN) {
             // allocate memory for the root node
-            this_token -> node_type = NT_INTERNAL;
             node_t *ret = calloc(1, sizeof(node_t));
-            this_token->children[0] = ret; 
-            advance_lexer()
+            if (! ret) {
+                // calloc returns NULL if memory allocation fails
+            logging(LOG_FATAL, "failed to allocate node");
+                return NULL;
+            }
+        if (this_token ->ttype == TOK_LPAREN) {
+            //create a new branch downward
+            
+            // set the node struct's fields
+            ret->node_type = NT_INTERNAL;
+            advance_lexer();
+            ret->children[0] = build_exp();
+            ret->tok = this_token->ttype;
+            advance_lexer();
+            ret->children[1] = build_exp();
         }            
-        if (this_token -> ttype == TOK_PLUS){
-            this_token -> node_type = NT_INternal;
-            node_t *ret = calloc(1, sizeof(node_t));
-            this_token -> children[1] = next_token;
-            advance_lexer()
-            return build_exp(ret);
-        }
-        return NULL;
+        
+
+        return ret;
     }
 }
 

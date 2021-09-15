@@ -9,14 +9,16 @@
 
 #include "ci.h"
 
+
 int main(int argc, char* argv[]) {
     handle_args(argc, argv);
     init();
     while (! terminate) {
         ignore_input = false;
         node_t *nptr = read_and_parse();
-        infer_and_eval(nptr);
-        format_and_print(nptr);
+        print_tree(nptr);
+        //infer_and_eval(nptr);
+        //format_and_print(nptr);
         cleanup(nptr);
         flush();
     }
