@@ -77,14 +77,28 @@ static node_t *build_leaf(void) {
     ret->node_type = NT_LEAF;
     switch (this_token->ttype){
         case TOK_NUM:
-        ret->type     = INT_TYPE;
-        ret->val.ival = atoi(this_token->repr);
-        break;
-    default:
-        return ret;
-        break;
+            ret->type     = INT_TYPE;
+            ret->val.ival = atoi(this_token->repr);
+            break;
+        case TOK_STR:
+            ret->val.sval = (char *) malloc(strlen(this_token->repr)+1);
+            strcpy(ret->val.sval, this_token->repr);
+            ret->type = STRING_TYPE;
+            break;
+        case TOK_ID:
+            ret->val.sval = (char *) malloc(strlen(this_token->repr)+1);
+            strcpy(ret->val.sval, this_token->repr);    
+            ret->type = ID_TYPE;
+            break;   
+        case TOK_FMT_SPEC:
+            ret->val.fval = this_token->repr[0];
+            ret->type = FMT_TYPE;
+            break;
+        default:
+            return ret;
+            break;
     }
-    if (next_token->ttype != TOK_EOL){
+    if (next_token->ttype != TOK_EOL && next_token->ttype != TOK_FMT_SPEC && next_token->ttype != TOK_SEP){
         advance_lexer();
     }
 
@@ -129,10 +143,19 @@ static node_t *build_exp(void) {
             // set the node struct's fields
             ret->node_type = NT_INTERNAL;
             advance_lexer();
-            ret->children[0] = build_exp();
-            ret->tok = this_token->ttype;
-            advance_lexer();
-            ret->children[1] = build_exp();
+            if(next_token->ttype == TOK_RPAREN){
+                ret = build_leaf();
+            }
+            else if(this_token->ttype == TOK_NOT || this_token->ttype == TOK_UMINUS){
+                ret->tok = this_token->ttype;
+                advance_lexer();
+                ret->children[0] = build_exp();
+            }else{
+                ret->children[0] = build_exp();
+                ret->tok = this_token->ttype;
+                advance_lexer();
+                ret->children[1] = build_exp(); 
+            }
         }
         if(!(next_token->ttype == TOK_EOL || next_token->ttype == TOK_SEP || next_token->ttype == TOK_FMT_SPEC)){
                 advance_lexer();
