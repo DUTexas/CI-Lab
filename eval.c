@@ -23,17 +23,55 @@ char *strrev(char *str);
  */
 
 static void infer_type(node_t *nptr) {
-    /*
-    if (nptr != NULL){
-        check val
-        if ( nptr -> val == ival){
-            nptr -> 
+    if (nptr == NULL) return;
+    // check running status
+    if (terminate || ignore_input) return;
+
+    // check for assignment
+    if (nptr->node_type == NT_INTERNAL){
+        if (nptr->type == ID_TYPE) {
+            infer_type(nptr->children[1]);
+        } else {
+            for (int i = 0; i < 3; ++i) {
+                infer_type(nptr->children[i]);
+            }
+            if (nptr->children[0] == NULL) {
+                logging(LOG_ERROR, "failed to find child node");
+                return;
+            }
+            nptr->type = nptr->children[0]->type;
         }
+        return;
+    } else if (nptr -> node_type == NT_LEAF){
+        switch (nptr -> tok)
+        {
+        case TOK_NUM:
+            nptr->type = INT_TYPE;
+            break;
 
+        case TOK_FALSE: case TOK_TRUE:
+            nptr->type = BOOL_TYPE;
+            break;
+    
+        case TOK_STR:
+            nptr->type = STRING_TYPE;
+            break;
+
+        case TOK_FMT_SPEC:
+            nptr->type = FMT_TYPE;
+            break;
+
+        case TOK_ID:
+            nptr->type = ID_TYPE;
+            break;
+        
+        default:
+            //throw type infrance error
+
+            break;
+        }
+        return
     }
-    */
-
-    return;
 }
 
 /* infer_root() - set the type of the root node based on the types of children

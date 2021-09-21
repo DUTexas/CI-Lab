@@ -42,4 +42,4 @@ else
     echo "all testcases passed"
 fi
 
-rm -f _output1 _output2
+#rm -f _output1 _output2
