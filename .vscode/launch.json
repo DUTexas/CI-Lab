@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "/u/dkuddes/cs429/projects/proj2/CI-lab/ci",
-            "args": ["-i", "./tests/test_variable.txt"],
+            "args":[], 
             "stopAtEntry": false,
             "cwd": "/u/dkuddes/cs429/projects/proj2/CI-lab",
             "environment": [],

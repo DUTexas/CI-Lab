@@ -29,7 +29,6 @@ static const struct {
     {"false", TOK_FALSE}
 };
 //DEBUG
-//node_t *ret = calloc(1, sizeof(node_t));
 
 /* is_binop() - return true if a token represents a binary operator
  * Parameter: Any token
@@ -69,7 +68,6 @@ static node_t *build_leaf(void) {
 
     node_t *ret = calloc(1, sizeof(node_t));
     if (! ret) {
-        // calloc returns NULL if memory allocation fails
         logging(LOG_FATAL, "failed to allocate node");
         return NULL;
     }
@@ -95,6 +93,7 @@ static node_t *build_leaf(void) {
             ret->type = FMT_TYPE;
             break;
         default:
+            handle_error(ERR_SYNTAX);
             return ret;
             break;
     }
@@ -133,8 +132,7 @@ static node_t *build_exp(void) {
             // allocate memory for the root node
             node_t *ret = calloc(1, sizeof(node_t));
             if (! ret) {
-                // calloc returns NULL if memory allocation fails
-            logging(LOG_FATAL, "failed to allocate node");
+                logging(LOG_FATAL, "failed to allocate node");
                 return NULL;
             }
         if (this_token ->ttype == TOK_LPAREN) {
@@ -177,7 +175,6 @@ static node_t *build_root(void) {
     // allocate memory for the root node
     node_t *ret = calloc(1, sizeof(node_t));
     if (! ret) {
-        // calloc returns NULL if memory allocation fails
         logging(LOG_FATAL, "failed to allocate node");
         return NULL;
     }
