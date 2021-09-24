@@ -112,7 +112,7 @@ static void infer_type(node_t *nptr) {
             case TOK_EQ:
                 if (is2Str) nptr->type = BOOL_TYPE;
                 else if (is2Int) nptr->type = BOOL_TYPE;
-                else if (is2Boo) nptr->type = BOOL_TYPE;
+                //else if (is2Boo) nptr->type = BOOL_TYPE;
                 else handle_error(ERR_TYPE); 
                 break;
             default:
