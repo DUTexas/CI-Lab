@@ -129,7 +129,7 @@ static void infer_type(node_t *nptr) {
             infer_type(nptr->children[2]);
             
             //assumes first argument is boolean literal
-            if (nptr->children[1]->type != nptr->children[2]->type){
+            if (nptr->children[1]->type != nptr->children[2]->type || nptr->children[0]->type != BOOL_TYPE){
                handle_error(ERR_TYPE);
             }
         }

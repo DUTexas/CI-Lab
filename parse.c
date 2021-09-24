@@ -44,9 +44,6 @@ bool is_unop(token_t t) {
     return t >= TOK_UMINUS && t <= TOK_NOT;
 }
 
-bool is_terop(token_t t){
-    return t >= TOK_QUESTION && t <= TOK_COLON;
-}
 
 /* id_is_fmt_spec() - return true if a string is a format specifier
  * Parameter: Any string
