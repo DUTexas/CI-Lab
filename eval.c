@@ -122,7 +122,7 @@ static void infer_type(node_t *nptr) {
             } 
         }
         
-        if (is_terop(nptr->tok)){
+        if (nptr->tok == TOK_QUESTION){
             //get child types
             infer_type(nptr->children[0]);
             infer_type(nptr->children[1]);
