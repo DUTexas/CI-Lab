@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     while (! terminate) {
         ignore_input = false;
         node_t *nptr = read_and_parse();
-        print_tree(nptr);
+        //print_tree(nptr);
         infer_and_eval(nptr);
         format_and_print(nptr);
         cleanup(nptr);

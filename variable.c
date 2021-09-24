@@ -112,7 +112,44 @@ entry_t * init_entry(char *id, node_t *nptr) {
  */
 
 void put(char *id, node_t *nptr) {
-    return;
+      if(nptr == NULL){
+        return;
+    }
+    int hf = (int) hash_function(id);
+    entry_t *new = init_entry(id, nptr);
+
+    //if no table create one
+    if(var_table -> entries[hf] == NULL){
+        var_table -> entries[hf] = new;
+    }
+    else{
+        entry_t *cur = var_table -> entries[hf];
+        while (cur){
+            //place entry in table set tail to point at null
+            if(cur -> next == NULL && strcmp(cur -> id, id) != 0){
+                cur -> next = new;
+                new -> next = NULL;
+                return;
+            }
+            //add to end of table and delete existing entry
+            else if(strcmp(cur -> id, id) == 0){
+                new -> next = cur -> next; //add to front
+                delete_entry(cur);
+                var_table -> entries[hf] = new;
+                return;
+            }
+            
+            else if(strcmp(cur -> next -> id, id) == 0){
+                new -> next = cur -> next -> next;
+                delete_entry(cur -> next);
+                cur -> next = new;
+                return;
+            }
+            else{
+                cur = cur -> next;
+            }
+        }
+    }
 }
 
 /* get() - search for an entry in the hashtable.
@@ -121,6 +158,17 @@ void put(char *id, node_t *nptr) {
  * (STUDENT TODO) 
  */
 entry_t* get(char* id) {
+    int hf = (int) hash_function(id);
+    entry_t *cur = var_table -> entries[hf];
+    while (cur)
+    {
+        if(strcmp(id, cur-> id) == 0){
+            return cur;
+        }
+        else{
+            cur = cur -> next;
+        }
+    }
     return NULL;
 }
 

@@ -44,6 +44,10 @@ bool is_unop(token_t t) {
     return t >= TOK_UMINUS && t <= TOK_NOT;
 }
 
+bool is_terop(token_t t){
+    return t >= TOK_QUESTION && t <= TOK_COLON;
+}
+
 /* id_is_fmt_spec() - return true if a string is a format specifier
  * Parameter: Any string
  * Return value: true if s is format specifier, false otherwise */
@@ -78,28 +82,40 @@ static node_t *build_leaf(void) {
             ret->type     = INT_TYPE;
             ret->val.ival = atoi(this_token->repr);
             break;
+        case TOK_FALSE:
+            ret->type     = BOOL_TYPE;
+            ret->val.bval = false;
+            break;
+        case TOK_TRUE:
+            ret->type     = BOOL_TYPE;
+            ret->val.bval = true;
+            break;
         case TOK_STR:
+            ret->type     = STRING_TYPE;
             ret->val.sval = (char *) malloc(strlen(this_token->repr)+1);
             strcpy(ret->val.sval, this_token->repr);
-            ret->type = STRING_TYPE;
             break;
         case TOK_ID:
+            ret->type     = ID_TYPE;
             ret->val.sval = (char *) malloc(strlen(this_token->repr)+1);
             strcpy(ret->val.sval, this_token->repr);    
-            ret->type = ID_TYPE;
             break;   
         case TOK_FMT_SPEC:
+            ret->type     = FMT_TYPE;
             ret->val.fval = this_token->repr[0];
-            ret->type = FMT_TYPE;
+            break;
+        case TOK_SEP:
+            ret->type     = FMT_TYPE;
+            ret->val.fval = this_token->repr[0];
             break;
         default:
             handle_error(ERR_SYNTAX);
             return ret;
             break;
     }
-    if (next_token->ttype != TOK_EOL && next_token->ttype != TOK_FMT_SPEC && next_token->ttype != TOK_SEP){
-        advance_lexer();
-    }
+    //if (next_token->ttype != TOK_EOL && next_token->ttype != TOK_FMT_SPEC && next_token->ttype != TOK_SEP){
+    //    advance_lexer();
+    //}
 
     return ret;
 }
@@ -129,7 +145,6 @@ static node_t *build_exp(void) {
         return build_leaf();
     } else {
         // (STUDENT TODO) implement the logic for internal nodes
-            // allocate memory for the root node
             node_t *ret = calloc(1, sizeof(node_t));
             if (! ret) {
                 logging(LOG_FATAL, "failed to allocate node");
@@ -141,28 +156,49 @@ static node_t *build_exp(void) {
             // set the node struct's fields
             ret->node_type = NT_INTERNAL;
             advance_lexer();
-            if(next_token->ttype == TOK_RPAREN){
-                ret = build_leaf();
-            }
-            else if(this_token->ttype == TOK_NOT || this_token->ttype == TOK_UMINUS){
+            //if(next_token->ttype == TOK_RPAREN){
+            //    ret = build_leaf();
+            //}
+            if(is_unop(this_token->ttype)){
                 ret->tok = this_token->ttype;
                 advance_lexer();
                 ret->children[0] = build_exp();
+                advance_lexer();
             }else{
+                //if it's not unary create the first child
                 ret->children[0] = build_exp();
+                advance_lexer();
+            }
+            
+            if (is_binop(this_token->ttype)){
                 ret->tok = this_token->ttype;
                 advance_lexer();
                 ret->children[1] = build_exp(); 
+                advance_lexer();
+            } else if (this_token->ttype == TOK_QUESTION){
+                ret->tok = this_token -> ttype;
+                advance_lexer();
+                ret->children[1] = build_exp();
+                advance_lexer();
+                //expect next token to be : or throw error
+                if (this_token->ttype != TOK_COLON) handle_error(ERR_SYNTAX);
+                advance_lexer();
+                ret->children[2] = build_exp();
+                advance_lexer();
             }
         }
-        if(!(next_token->ttype == TOK_EOL || next_token->ttype == TOK_SEP || next_token->ttype == TOK_FMT_SPEC)){
-                advance_lexer();
-        }
-        
-
+        //if(!(next_token->ttype == TOK_EOL || next_token->ttype == TOK_SEP || next_token->ttype == TOK_FMT_SPEC)){
+        //        advance_lexer();
+        //}
+        //if(this_token->ttype == TOK_RPAREN){
+        //    //ret = build_leaf();
+        //    advance_lexer(); 
+        //}
         return ret;
     }
 }
+
+
 
 /* build_root() - construct the root of the AST for the current input
  * This function is provided to you. Use it as a reference for your code

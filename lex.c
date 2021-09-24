@@ -164,4 +164,5 @@ void advance_lexer(void) {
     this_token = next_token;
     next_token = tmp;
     get_token(next_token);
+    //printf("%s\n", this_token->repr);
 }

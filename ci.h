@@ -112,3 +112,6 @@ extern bool terminate, ignore_input;
 
 /* (EEL-2) The hashtable storing all defined variables. */
 extern table_t *var_table;
+
+//Student added
+extern bool is_terop(token_t t);
